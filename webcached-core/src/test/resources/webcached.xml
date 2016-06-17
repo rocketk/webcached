@@ -42,10 +42,10 @@
 		<!-- 修改office时，并且当修改的值为，刷新采集点接口的缓存 -->
 		<trigger cache-uri="/m/sys/office/collectorLocations.htm" trigger-uri="/a/sys/office/save" strategy="refresh"
 				 scope="specific">
-			<!-- 当scope为specific时，target-params将启用，只要满足一个条件，即刷新或清空缓存-->
+			<!-- 当scope为specific时，condition将启用，只要满足一个条件，即刷新或清空缓存-->
 			<!-- non-param无参数时也要刷新或清空缓存，通常用于列表类的查询接口 -->
 			<conditions>
-				<!-- name/value 表示缓存uri的参数名和参数值，_params表示trigger-uri的参数-->
+				<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数-->
 				<!--多个 condition 之间是or的关系，不是and关系，即缓存对象中，只有满足一个condition，就会被更新-->
 				<condition type="param-equal" name="areaId" value="${_params.areaId}"/>
 				<condition type="non-param"/>
@@ -53,27 +53,27 @@
 		</trigger>
 		<!-- 当scope为specific时，target-params将启用。只要满足一个条件，即刷新或清空缓存-->
 		<trigger cache-uri="/m/stu/userInfo.xhtm" trigger-uri="/m/stu/updateStu.xhtm" strategy="refresh" scope="specific">
-			<!-- name/value 表示缓存uri的参数名和参数值，_params表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
+			<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
 			<conditions>
-				<condition name="tk" value="${_params.tk}"/>
+				<condition name="tk" value="${tk}"/>
 			</conditions>
 		</trigger>
 		<trigger cache-uri="/m/stu/userInfo1.xhtm" trigger-uri="/m/stu/updateStu.xhtm" strategy="refresh" scope="specific">
-			<!-- name/value 表示缓存uri的参数名和参数值，_params表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
+			<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
 			<conditions>
-				<condition name="tk" value="${_params.tk}"/>
+				<condition name="tk" value="${tk}"/>
 			</conditions>
 		</trigger>
 		<trigger cache-uri="/m/stu/userInfo.xhtm" trigger-uri="/m/stu/updateUserAvatar.xhtm" strategy="refresh" scope="specific">
-			<!-- name/value 表示缓存uri的参数名和参数值，_params表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
+			<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
 			<conditions>
-				<condition name="tk" value="${_params.tk}"/>
+				<condition name="tk" value="${tk}"/>
 			</conditions>
 		</trigger>
 		<trigger cache-uri="/m/stu/userInfo.xhtm" trigger-uri="/m/stu/updateArchives.xhtm" strategy="refresh" scope="specific">
-			<!-- name/value 表示缓存uri的参数名和参数值，_params表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
+			<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数，name支持多个值，用逗号分隔开-->
 			<conditions>
-				<condition name="tk" value="${_params.tk}"/>
+				<condition name="tk" value="${tk}"/>
 			</conditions>
 		</trigger>
 

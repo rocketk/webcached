@@ -1,4 +1,4 @@
-package webcache.config;
+package py.webcache.config;
 
 import com.alibaba.fastjson.JSON;
 import org.junit.Assert;

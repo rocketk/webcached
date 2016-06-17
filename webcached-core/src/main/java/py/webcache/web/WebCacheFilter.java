@@ -1,21 +1,22 @@
 package py.webcache.web;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import py.webcache.config.ConfigHelper;
+import py.webcache.config.pojo.Condition;
 import py.webcache.config.pojo.GlobalSetting;
 import py.webcache.config.pojo.Trigger;
 import py.webcache.handler.CacheHandler;
 import py.webcache.handler.CacheObject;
 import py.webcache.handler.KeyGenerator;
+import py.webcache.util.StrExpressionUtil;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * web端缓存过滤器
@@ -101,13 +102,20 @@ public class WebCacheFilter implements Filter {
             Set<String> configCachedUriList = configHelper.cachedUriSetForTrigger(triggerUri);
             if (configCachedUriList != null) {
                 for (String configCachedUri : configCachedUriList) {
-                    Set<String> keysForUri = cacheHandler.getKeysForUri(configCachedUri);
-                    if (keysForUri != null && keysForUri.size() > 0) {
-                        for (String key : keysForUri) {
+                    Set<String> allKeysOfUri = cacheHandler.getKeysForUri(configCachedUri);
+                    if (allKeysOfUri != null && allKeysOfUri.size() > 0) {
+                        Trigger trigger = configHelper.getTrigger(triggerUri, configCachedUri);
+                        if (trigger == null) {
+                            continue;
+                        }
+                        Set<Condition> conditions = configHelper.getConditions(triggerUri, configCachedUri);
+                        for (String key : allKeysOfUri) {
+                            Map<String, String[]> sortedParams = keyGenerator.getParamsFromKey(key);
                             // 逐条判断缓存服务器中的每一个key是否符合condition
-                            if (matchCondition(key, request)) {
+                            if (trigger.getScope().equals(Trigger.Scope.all) ||
+                                    matchCondition(configCachedUri, sortedParams, request.getParameterMap(), conditions)) {
                                 // 判断更新策略，clear/refresh
-                                Trigger.Strategy strategy = configHelper.getTriggerStrategy(triggerUri, configCachedUri);
+                                Trigger.Strategy strategy = trigger.getStrategy();
                                 switch (strategy) {
                                     case refresh:
                                         // TODO: 2016/6/6  更新操作未实现，暂时先按clear处理
@@ -127,11 +135,29 @@ public class WebCacheFilter implements Filter {
         }
     }
 
-    protected boolean matchCondition(String key, HttpServletRequest request) {
+    protected boolean matchCondition(String cachedUri, Map<String, String[]> cachedUrlParams,
+                                     Map<String, String[]> triggerUrlParams, Set<Condition> conditions) {
         // TODO: 2016/6/6 判断key是否符合条件，需要考虑表达式的使用
-        String uri = keyGenerator.getUriFromKey(key);
         // 从key中获取参数，从配置文件中获取condition，如果condition中有表达式，则要从request中获取相应的值，来跟key中的参数进行比较
-        return true;
+        // 只要满足一个condition，就返回true，当所有condition都不满足时，返回false
+        for (Condition condition : conditions) {
+            switch (condition.getType()) {
+                case nonParam:
+                    // 缓存uri中不包含参数的，返回true，否则继续遍历
+                    if (cachedUrlParams == null || cachedUrlParams.size() == 0) {
+                        return true;
+                    }
+                    break;
+                case paramEqual:
+                    List<String> realValueOfCondition = StrExpressionUtil.parseExpressionWithMultiValue(condition.getValue(), triggerUrlParams);
+                    String[] values = cachedUrlParams.get(condition.getName());
+                    if (CollectionUtils.intersection(Arrays.asList(realValueOfCondition), Arrays.asList(values)).size() > 0) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
     }
 
     protected boolean isForceUpdate(HttpServletRequest request) {
@@ -185,7 +211,7 @@ public class WebCacheFilter implements Filter {
         response.setHeader(HEADER_WEBCACHE, "hit");
         long cost = (System.currentTimeMillis() - cacheObject.getPutTime()) / 1000; // 已消耗了多长时间，秒
         long left = cacheObject.getExpiredTime() - cost; // 还剩多少时间，秒
-        response.setHeader("cach_left_time", String.format("%d:%d:%d", left/3600, left%3600/60, left%60));
+        response.setHeader("cach_left_time", String.format("%d:%d:%d", left / 3600, left % 3600 / 60, left % 60));
     }
 
     protected void onSkipCache(HttpServletRequest request, HttpServletResponse response) {

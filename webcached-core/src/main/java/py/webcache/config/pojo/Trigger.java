@@ -1,5 +1,7 @@
 package py.webcache.config.pojo;
 
+import py.webcache.util.BeanUtil;
+
 import java.util.Set;
 
 /**
@@ -94,15 +96,14 @@ public class Trigger {
             }
             if (obj instanceof Id) {
                 Id objId = (Id) obj;
-                return (this.cacheUri == null && objId.cacheUri == null || this.cacheUri.equals(objId.cacheUri))
-                        && (this.triggerUri == null && objId.triggerUri == null || this.triggerUri.equals(objId.triggerUri));
+                return BeanUtil.equalsWithEachField(this, objId);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return cacheUri.hashCode() + triggerUri.hashCode();
+            return (cacheUri != null ? cacheUri.hashCode() : 0) + (triggerUri != null ? triggerUri.hashCode() : 0);
         }
     }
 }

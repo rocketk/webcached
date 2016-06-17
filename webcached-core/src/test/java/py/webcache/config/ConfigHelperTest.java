@@ -1,4 +1,4 @@
-package webcache.config;
+package py.webcache.config;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.junit.Assert;

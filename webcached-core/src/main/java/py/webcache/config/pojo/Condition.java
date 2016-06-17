@@ -1,5 +1,7 @@
 package py.webcache.config.pojo;
 
+import py.webcache.util.BeanUtil;
+
 /**
  * Created by pengyu on 2016/5/12.
  */
@@ -43,5 +45,27 @@ public class Condition {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof Condition) {
+            Condition another = (Condition) obj;
+            return BeanUtil.equalsWithEachField(this, another);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return (type != null ? type.hashCode() : 0)
+                + (name != null ? name.hashCode() : 0)
+                + (value != null ? value.hashCode() : 0);
     }
 }

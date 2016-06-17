@@ -1,4 +1,4 @@
-package webcache.util;
+package py.webcache.util;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -6,10 +6,7 @@ import org.junit.Test;
 import py.webcache.config.pojo.CacheConfig;
 import py.webcache.util.CollectionUtil;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by pengyu on 2016/5/19.
@@ -51,5 +48,25 @@ public class CollectionUtilTest {
         Assert.assertNotNull(map);
         Assert.assertEquals(2, map.size());
         Assert.assertEquals("/abcd", map.get("/abcd").getUri());
+    }
+
+    @Test
+    public void testTravers() throws Exception {
+        Map<String, String[]> paramMap = new TreeMap<>(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+        paramMap.put("b", new String[]{"b1"});
+        paramMap.put("a", new String[]{"abc"});
+        paramMap.put("aa", new String[]{"abc", "aaabc"});
+        paramMap.put("t", new String[]{"tf"});
+        CollectionUtil.travers(paramMap, new CollectionUtil.Travelers<String, String[]>() {
+            @Override
+            public void dosomething(String s, String[] strings, Object o) {
+
+            }
+        });
     }
 }

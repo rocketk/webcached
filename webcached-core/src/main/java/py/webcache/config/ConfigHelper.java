@@ -1,9 +1,6 @@
 package py.webcache.config;
 
-import py.webcache.config.pojo.CacheConfig;
-import py.webcache.config.pojo.Configuration;
-import py.webcache.config.pojo.GlobalSetting;
-import py.webcache.config.pojo.Trigger;
+import py.webcache.config.pojo.*;
 import py.webcache.exception.NoSuchCacheConfigException;
 import py.webcache.util.CollectionUtil;
 
@@ -186,7 +183,16 @@ public class ConfigHelper {
         return stringSet;
     }
 
-    public Trigger.Strategy getTriggerStrategy(String triggerUri, String cachedUri) {
+    public Trigger getTrigger(String triggerUri, String cachedUri) {
+        if (triggerUri == null || triggerUri.length() == 0 || cachedUri == null || cachedUri.length() == 0) {
+            throw new IllegalArgumentException("argument triggerUri/cachedUri is empty");
+        }
+        Map<Trigger.Id, Trigger> triggersGroupById = configuration.getTriggersGroupById();
+        Trigger trigger = triggersGroupById.get(new Trigger.Id(cachedUri, triggerUri));
+        return trigger;
+    }
+
+    public Set<Condition> getConditions(String triggerUri, String cachedUri) {
         if (triggerUri == null || triggerUri.length() == 0 || cachedUri == null || cachedUri.length() == 0) {
             throw new IllegalArgumentException("argument triggerUri/cachedUri is empty");
         }
@@ -196,7 +202,7 @@ public class ConfigHelper {
 //            throw new NullPointerException(String.format("the trigger is null for triggerUri = %s and cachedUri = %s", triggerUri, cachedUri));
             return null;
         }
-        return trigger.getStrategy();
+        return trigger.getConditions();
     }
 
 
