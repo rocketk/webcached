@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	   xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	   xmlns:util="http://www.springframework.org/schema/util" xmlns:task="http://www.springframework.org/schema/task"
+	   xmlns:mvc="http://www.springframework.org/schema/cache" xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd"
+	   default-lazy-init="true">
+	<!-- 加载配置属性文件 -->
+	<context:property-placeholder ignore-unresolvable="true" location="classpath:config.properties" />
+
+	<bean name="memcachedClient"
+		  class="net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean"
+		  destroy-method="shutdown">
+		<property name="servers">
+			<!-- 测试服务器，正式上线前需要做切换 -->
+			<value>${session.admin.memcached.servers}</value>
+		</property>
+		<!-- server's weights -->
+		<!--<property name="weights">-->
+		<!--<list>-->
+		<!--<value>1</value>-->
+		<!--</list>-->
+		<!--</property>-->
+		<!-- nio connection pool size -->
+		<property name="connectionPoolSize" value="20"></property>
+		<!-- Use binary protocol,default is TextCommandFactory -->
+		<property name="commandFactory">
+			<bean class="net.rubyeye.xmemcached.command.BinaryCommandFactory"></bean>
+		</property>
+		<!-- Distributed strategy -->
+		<property name="sessionLocator">
+			<bean class="net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator"></bean>
+		</property>
+		<!-- Serializing transcoder -->
+		<property name="transcoder">
+			<bean class="net.rubyeye.xmemcached.transcoders.SerializingTranscoder" />
+		</property>
+		<!-- ByteBuffer allocator -->
+		<property name="bufferAllocator">
+			<bean class="net.rubyeye.xmemcached.buffer.SimpleBufferAllocator"></bean>
+		</property>
+		<!-- 设置操作超时时间 -->
+		<!-- 单位都是ms -->
+		<property name="opTimeout">
+			<value>800</value>
+		</property>
+		<property name="connectTimeout">
+			<value>800</value>
+		</property>
+	</bean>
+
+	<bean id="webcachedConfiguration" class="py.webcache.config.ConfigSpringFactory">
+		<property name="configLocation" value="webcached.xml"/>
+	</bean>
+	<bean id="configHelper" class="py.webcache.config.ConfigHelper">
+		<property name="configuration" ref="webcachedConfiguration"/>
+	</bean>
+	<bean id="keyGenerator" class="py.webcache.handler.DefaultKeyGenerator"/>
+	<bean id="cacheObjectSerializer" class="py.webcache.handler.proto.ProtobufCacheObjectSerializer"/>
+	<bean id="keySetSerializer" class="py.webcache.handler.proto.ProtobufKeySetSerializer"/>
+	<bean id="cacheHandler" class="py.webcache.handler.MemcachedCacheHandler">
+		<property name="cacheObjectSerializer" ref="cacheObjectSerializer"/>
+		<property name="client" ref="memcachedClient"/>
+		<property name="keySetSerializer" ref="keySetSerializer"/>
+		<property name="keyGenerator" ref="keyGenerator"/>
+	</bean>
+	<bean id="cachedContentHttpServletResponseFactory" class="py.webcache.web.CachedContentHttpServletResponseFactoryImpl"/>
+
+	<bean  name="webCacheFilter" class="py.webcache.web.WebCacheFilter">
+		<property name="cacheHandler" ref="cacheHandler"/>
+		<property name="cachedContentHttpServletResponseFactory" ref="cachedContentHttpServletResponseFactory"/>
+		<property name="configHelper" ref="configHelper"/>
+		<property name="keyGenerator" ref="keyGenerator"/>
+	</bean>
+
+
+</beans>

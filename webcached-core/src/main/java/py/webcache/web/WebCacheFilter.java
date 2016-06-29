@@ -44,7 +44,7 @@ public class WebCacheFilter implements Filter {
         CachedContentHttpServletResponse responseWrapper = cachedContentHttpServletResponseFactory.getCachedHttpServletResponse(res);
         String method = req.getMethod();
 //        String uri = req.getRequestURI();
-        String uri = req.getServletPath() + req.getPathInfo(); // 相当于 req.getRequestURI().replace(req.getContextPath(), "")
+        String uri = req.getServletPath(); // 相当于 req.getRequestURI().replace(req.getContextPath(), "")
         // 判断该请求是否支持缓存
         if (configHelper.isSupportCache(uri)) { // 支持缓存
             // 对参数进行排序，和去空
@@ -97,7 +97,7 @@ public class WebCacheFilter implements Filter {
     protected void trigger(HttpServletRequest request) throws IOException, ServletException {
         // TODO untested 流程未测试
         // 判断是否是trigger，如果是，找出它所要更新的全部cacheUri
-        String triggerUri = request.getServletPath() + request.getPathInfo();
+        String triggerUri = request.getServletPath();
         if (configHelper.isTrigger(triggerUri)) {
             Set<String> configCachedUriList = configHelper.cachedUriSetForTrigger(triggerUri);
             if (configCachedUriList != null) {
@@ -118,7 +118,7 @@ public class WebCacheFilter implements Filter {
                                 Trigger.Strategy strategy = trigger.getStrategy();
                                 switch (strategy) {
                                     case refresh:
-                                        // TODO: 2016/6/6  更新操作未实现，暂时先按clear处理
+                                        // TODO: 2016/6/6  更新操作未实现，暂时先按clear处理。
                                     case clear:
                                         cacheHandler.delete(key);
                                         break;
@@ -151,7 +151,7 @@ public class WebCacheFilter implements Filter {
                 case paramEqual:
                     List<String> realValueOfCondition = StrExpressionUtil.parseExpressionWithMultiValue(condition.getValue(), triggerUrlParams);
                     String[] values = cachedUrlParams.get(condition.getName());
-                    if (CollectionUtils.intersection(Arrays.asList(realValueOfCondition), Arrays.asList(values)).size() > 0) {
+                    if (CollectionUtils.intersection(realValueOfCondition, Arrays.asList(values)).size() > 0) {
                         return true;
                     }
                     break;

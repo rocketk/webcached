@@ -47,9 +47,9 @@ public class StrExpressionUtilTest {
         map.put("key", new String[]{"AAA"});
         map.put("key1", new String[]{"AAA", "BBB"});
         map.put("key2", new String[]{"AAA", "BBB", "CCC"});
-        Assert.assertArrayEquals(new String[]{"AAA"}, StrExpressionUtil.parseExpressionWithMultiValue("${key}", map));
-        Assert.assertArrayEquals(new String[]{"AAA", "BBB"}, StrExpressionUtil.parseExpressionWithMultiValue("${key1}", map));
-        Assert.assertArrayEquals(new String[]{"AAA", "BBB", "CCC"}, StrExpressionUtil.parseExpressionWithMultiValue("${key2}", map));
+        Assert.assertArrayEquals(new String[]{"AAA"}, StrExpressionUtil.parseExpressionWithMultiValue("${key}", map).toArray());
+        Assert.assertArrayEquals(new String[]{"AAA", "BBB"}, StrExpressionUtil.parseExpressionWithMultiValue("${key1}", map).toArray());
+        Assert.assertArrayEquals(new String[]{"AAA", "BBB", "CCC"}, StrExpressionUtil.parseExpressionWithMultiValue("${key2}", map).toArray());
     }
 
 

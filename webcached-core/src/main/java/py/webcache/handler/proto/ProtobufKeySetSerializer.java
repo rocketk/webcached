@@ -23,8 +23,8 @@ public class ProtobufKeySetSerializer implements KeySetSerializer {
 
     @Override
     public Set<String> deserialize(byte[] bytes) {
-        if (bytes == null || bytes.length == 0) {
-            throw new NullPointerException("bytes should not be null or empty");
+        if (bytes == null) {
+            throw new NullPointerException("bytes should not be null");
         }
         KeySetProtocol.KeySetProto.Builder builder = KeySetProtocol.KeySetProto.newBuilder();
         try {

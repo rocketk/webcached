@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import py.webcache.model.User;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.TreeMap;
  * Created by pengyu on 2016/6/14.
  */
 @Controller
+@RequestMapping("user")
 public class UserController {
 
     private Map<Integer, User> userMap = new TreeMap<Integer, User>();
@@ -45,7 +47,7 @@ public class UserController {
 
     @ResponseBody
     @RequestMapping("userInfo")
-    public User userInfo(String userId) {
+    public User userInfo(Integer userId) {
         return userMap.get(userId);
     }
 
@@ -66,5 +68,21 @@ public class UserController {
             list.add(userMap.get(start + i));
         }
         return list;
+    }
+
+
+    @RequestMapping("testInfo")
+    @ResponseBody
+    public String testInfo(HttpServletRequest request) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("request.getServletPath() :　").append(request.getServletPath());
+        sb.append("\n").append("request.getServerName() :　").append(request.getServerName());
+        sb.append("\n").append("request.getRemoteHost() :　").append(request.getRemoteHost());
+        sb.append("\n").append("request.getContextPath() :　").append(request.getContextPath());
+        sb.append("\n").append("request.getRequestURL() :　").append(request.getRequestURL());
+        sb.append("\n").append("request.getRequestURI() :　").append(request.getRequestURI());
+        sb.append("\n").append("request.getPathInfo() :　").append(request.getPathInfo());
+        System.out.println(sb.toString());
+        return sb.toString();
     }
 }

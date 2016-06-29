@@ -131,8 +131,8 @@ public class ConfigHelperTest {
     public void testGetTriggerStrategy() throws Exception {
         String uri1 = "/a/sys/office/save";
         String uri2 = "/m/stu/userInfo.xhtm";
-        Assert.assertTrue(configHelper.getTriggerStrategy(uri1, "/m/sys/office/collectorLocations.htm").equals(Trigger.Strategy.refresh));
-        Assert.assertNull(configHelper.getTriggerStrategy(uri1, "/m/sys/office/collectorLocations1.htm"));
-        Assert.assertNull(configHelper.getTriggerStrategy(uri2, "/m/sys/office/collectorLocations.htm"));
+        Assert.assertTrue(configHelper.getTrigger(uri1, "/m/sys/office/collectorLocations.htm").getStrategy().equals(Trigger.Strategy.refresh));
+        Assert.assertNull(configHelper.getTrigger(uri1, "/m/sys/office/collectorLocations1.htm"));
+        Assert.assertNull(configHelper.getTrigger(uri2, "/m/sys/office/collectorLocations.htm"));
     }
 }

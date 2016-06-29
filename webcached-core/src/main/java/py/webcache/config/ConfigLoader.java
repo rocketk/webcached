@@ -51,6 +51,12 @@ public class ConfigLoader {
             configuration.setTriggersGroupByCacheUri(CollectionUtil.groupSetToMap(configuration.getTriggers(), "cacheUri", String.class));
             configuration.setTriggersGroupByTriggerUri(CollectionUtil.groupSetToMap(configuration.getTriggers(), "triggerUri", String.class));
             configuration.setTriggersGroupById(CollectionUtil.groupSetToUniqueMap(configuration.getTriggers(), "id", Trigger.Id.class));
+            if (configuration.getTriggers() == null) {
+                configuration.setTriggers(new HashSet<Trigger>());
+                configuration.setTriggersGroupByCacheUri(new HashMap<String, Set<Trigger>>());
+                configuration.setTriggersGroupByTriggerUri(new HashMap<String, Set<Trigger>>());
+                configuration.setTriggersGroupById(new HashMap<Trigger.Id, Trigger>());
+            }
         } catch (DocumentException e) {
             throw new LoadConfigurationException("An exception occurred when reading " + xmlName, e);
         } catch (IllegalAccessException e) {

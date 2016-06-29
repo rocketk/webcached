@@ -17,7 +17,25 @@
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
+                    <encoding>utf-8</encoding>
                 </configuration>
+            </plugin>
+            <!--  deploy source    -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

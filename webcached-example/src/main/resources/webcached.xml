@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<!--全局设置-->
+	<global-setting>
+		<!--强制更新缓存参数名（用于在request.header中）-->
+		<forceUpdateName>force_update</forceUpdateName>
+		<!--强制更新缓存口令-->
+		<forceUpdateValue>xhmobile-!@#</forceUpdateValue>
+		<asdfasdf>sasdf</asdfasdf>
+	</global-setting>
+	<caches>
+		<!-- cache配置对象 -->
+		<cache>
+			<!-- uri用来生成缓存key（同时还会用到参数，parameters.type=exclude_all时除外），和唯一标识一个cache配置对象，在<setting>中被引用-->
+			<uri>/user/userInfo</uri>
+			<!--parameters表示uri请求的参数，这些参数将会被用作生成缓存的key
+				type类型包含 include_all/exclude_all ，用来描述哪些参数可以或不可以被用作生成缓存key，默认为include_all
+				忽略无值参数-->
+			<parameter type="exclude_all" exceptions="userId"/>
+			<!--缓存有效期，单位秒，默认60-->
+			<expired-time>180</expired-time>
+			<!--缓存到期之后自动刷新，默认为false-->
+			<auto-refresh>true</auto-refresh>
+			<!--支持的status状态码，多个状态码用逗号分隔，即当返回结果并不支持缓存时，将不会缓存结果，默认为200-->
+			<support-status>200</support-status>
+		</cache>
+		<!-- cache配置对象 -->
+		<cache>
+			<!-- uri用来生成缓存key（同时还会用到参数，parameters.type=exclude_all时除外），和唯一标识一个cache配置对象，在<setting>中被引用-->
+			<uri>/user/userList</uri>
+			<!--parameters表示uri请求的参数，这些参数将会被用作生成缓存的key
+				type类型包含 include_all/exclude_all ，用来描述哪些参数可以或不可以被用作生成缓存key，默认为include_all
+				忽略无值参数-->
+			<parameter type="exclude_all" exceptions="pageNo"/>
+		</cache>
+	</caches>
+	<!--缓存更新设置-->
+	<update-triggers>
+		<!-- strategy 策略包含 refresh/clear，默认为clear
+			refresh 刷新缓存，以新值替代旧值
+			clear 清空缓存，仅使缓存失效-->
+		<!-- scope 范围包含 all/specific ，针对缓存uri的参数，默认为all
+			all 表示不论缓存参数为何，都刷新或清空，当设置此项时，<conditions>没用
+			specific 根据自定义的参数项来绝对是否刷新或清空缓存-->
+		<!-- cache-uri是在上面的<cache>配置中定义的uri -->
+		<!-- 修改office时，并且当修改的值为，刷新采集点接口的缓存 -->
+		<trigger cache-uri="/user/userInfo" trigger-uri="/user/saveUser" strategy="refresh" scope="specific">
+			<!-- 当scope为specific时，condition将启用，只要满足一个条件，即刷新或清空缓存-->
+			<!-- non-param无参数时也要刷新或清空缓存，通常用于列表类的查询接口 -->
+			<conditions>
+				<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数-->
+				<!--多个 condition 之间是or的关系，不是and关系，即缓存对象中，只有满足一个condition，就会被更新-->
+				<condition type="param-equal" name="userId" value="${userId}"/>
+			</conditions>
+		</trigger>
+
+		<trigger cache-uri="/user/userList" trigger-uri="/user/saveUser" strategy="refresh" scope="all">
+			<!-- 当scope为specific时，condition将启用，只要满足一个条件，即刷新或清空缓存-->
+			<!-- non-param无参数时也要刷新或清空缓存，通常用于列表类的查询接口 -->
+			<conditions>
+				<!-- name/value 表示缓存uri的参数名和参数值，value表示trigger-uri的参数-->
+				<!--多个 condition 之间是or的关系，不是and关系，即缓存对象中，只有满足一个condition，就会被更新-->
+				<condition type="non-param"/>
+			</conditions>
+		</trigger>
+
+	</update-triggers>
+</configuration>
