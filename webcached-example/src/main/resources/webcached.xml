@@ -5,7 +5,7 @@
 		<!--强制更新缓存参数名（用于在request.header中）-->
 		<forceUpdateName>force_update</forceUpdateName>
 		<!--强制更新缓存口令-->
-		<forceUpdateValue>xhmobile-!@#</forceUpdateValue>
+		<forceUpdateValue>12345678</forceUpdateValue>
 		<asdfasdf>sasdf</asdfasdf>
 	</global-setting>
 	<caches>

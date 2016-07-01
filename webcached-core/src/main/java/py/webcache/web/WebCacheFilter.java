@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import py.webcache.config.ConfigHelper;
 import py.webcache.config.pojo.Condition;
+import py.webcache.config.pojo.Configuration;
 import py.webcache.config.pojo.GlobalSetting;
 import py.webcache.config.pojo.Trigger;
 import py.webcache.handler.CacheHandler;
@@ -183,7 +184,8 @@ public class WebCacheFilter implements Filter {
         // TODO: 2016/6/30 只处理GET类型
         String url = keyGenerator.getUrlFromKey(key);
         Map<String, String> headers = new HashMap<>();
-        headers.put("force_update", "xhmobile-!@#");
+        Configuration configuration = configHelper.getConfiguration();
+        headers.put(configuration.getGlobalSetting().getForceUpdateName(), configuration.getGlobalSetting().getForceUpdateName());
         StringBuilder sb = new StringBuilder();
         sb.append("http://127.0.0.1:").append(request.getServerPort()).append("/").append(request.getContextPath()).append("/").append(url);
         httpClientUtils.httpGet(sb.toString(), headers);
