@@ -41,9 +41,11 @@
 ## 项目结构
 本项目采用maven构建，项目结构采用标准maven结构，分为两个模块：webcached-core，webcached-example
 
+```
 webcached
   -- webcached-core 核心包，在引入时只引入这个包就行了
   -- webcached-example 示例，使用springmvc搭建了一个简易的web系统，用来演示webcached的功能
+```
   
 ## 快速开发
 参考webcached-example
