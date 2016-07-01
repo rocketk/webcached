@@ -49,7 +49,7 @@ webcached
   
 ## 快速体验
 - 下载项目，导入到开发环境（我用的是Intellij Idea）
-- 为`webcached-example`配置一个tomcat容器，跑起来，假设端口`8080`
+- 为`webcached-example`模块配置一个tomcat容器，跑起来，假设端口`8080`，contextPath为`webcached`
 - 用下面的三个接口来验证缓存管理机制
 
 	```
