@@ -48,20 +48,23 @@ webcached
 ```
   
 ## 快速体验
+- 说明：本项目虽然对缓存服务器进行了抽象，理论上可以支持任意一种缓存服务器（诸如memcached/redis/mongodb或者干脆直接用HashMap），但截至到目前，只实现了memcached版本，所以要想跑这个示例程序的话，需要先安装并启动一个memcached服务，具体安装和启动过程就不在这里叙述了，百度一下啥都有。如果要实现内存版本的，只需实现`CacheHandler`接口就行了，并在`webcached/webcached-example/src/main/resoures/spring-context.xml`中配置一下即可
 - 下载项目，导入到开发环境（我用的是Intellij Idea）
+- 打开`webcached/webcached-example/src/main/resoures/config.properties`，修改`memcached.servers`为自己的memcached服务器地址
 - 为`webcached-example`模块配置一个tomcat容器，跑起来，假设端口`8080`，contextPath为`webcached`
 - 用下面的三个接口来验证缓存管理机制
 	```
-	127.0.0.1:8080/webcached/user/userInfo?userId=1
+	用户详情接口： http://127.0.0.1:8080/webcached/user/userInfo?userId=1
 	
-	127.0.0.1:8080/webcached/user/saveUser?userId=1&userName=james1
+	保存用户信息接口： http://127.0.0.1:8080/webcached/user/saveUser?userId=1&userName=james1
 	
-	127.0.0.1:8080/webcached/user/userList?pageNo=1
+	用户列表接口： http://127.0.0.1:8080/webcached/user/userList?pageNo=1
 	```
+	这三个接口显然存在一定的关系，用户详情接口和用户列表接口是可以被缓存的，而“保存用户信息接口”一旦成功，那么它修改的那条用户的详情接口的缓存需要刷新一下，用户列表接口的数据（可以分页）全都要刷新。通过查看这些接口是否使用了缓存、是否刷新来验证缓存控制机制是否生效，“是否使用缓存”将通过下面的方式来判断
 - 接口的返回结果，关于缓存管理的信息都保存在response的header中  
 	- header `webcache` 表示是否使用缓存，有3个可能的值，值为`hit`表示命中，值为`no cache`表示没有用到缓存，值为`skip`表示此接口不需要缓存
 
-	- header `cach_left_time` 表示本次访问时此接口所剩余的缓存时间（前提是此次访问命中了缓存，即`webcache->hit`），以时分秒的格式展现
+	- header `cach_left_time` 表示本次访问时此接口所剩余的缓存时间（前提是此次访问命中了缓存，即`webcache->hit`），以“时分秒”的格式展现
 
 ## 联系作者
 彭宇，qq 450550330
