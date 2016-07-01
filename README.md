@@ -47,8 +47,23 @@ webcached
   -- webcached-example 示例，使用springmvc搭建了一个简易的web系统，用来演示webcached的功能
 ```
   
-## 快速开发
-参考webcached-example
+## 快速体验
+- 下载项目，导入到开发环境（我用的是Intellij Idea）
+- 为`webcached-example`配置一个tomcat容器，跑起来，假设端口`8080`
+- 用下面的三个接口来验证缓存管理机制
+
+	```
+	127.0.0.1:8080/webcached/user/userInfo?userId=1
+	
+	127.0.0.1:8080/webcached/user/saveUser?userId=1&userName=james1
+	
+	127.0.0.1:8080/webcached/user/userList?pageNo=1
+	```
+
+- 接口的返回结果，关于缓存管理的信息都保存在response的header中
+header `webcache` 表示是否使用缓存，有3个可能的值，值为`hit`表示命中，值为`no cache`表示没有用到缓存，值为`skip`表示此接口不需要缓存
+
+header `cach_left_time` 表示本次访问时此接口所剩余的缓存时间（前提是此次访问命中了缓存，即`webcache->hit`），以时分秒的格式展现
 
 ## 联系作者
 彭宇，qq 450550330
