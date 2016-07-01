@@ -60,10 +60,10 @@ webcached
 	127.0.0.1:8080/webcached/user/userList?pageNo=1
 	```
 
-- 接口的返回结果，关于缓存管理的信息都保存在response的header中
-header `webcache` 表示是否使用缓存，有3个可能的值，值为`hit`表示命中，值为`no cache`表示没有用到缓存，值为`skip`表示此接口不需要缓存
+- 接口的返回结果，关于缓存管理的信息都保存在response的header中  
+	header `webcache` 表示是否使用缓存，有3个可能的值，值为`hit`表示命中，值为`no cache`表示没有用到缓存，值为`skip`表示此接口不需要缓存
 
-header `cach_left_time` 表示本次访问时此接口所剩余的缓存时间（前提是此次访问命中了缓存，即`webcache->hit`），以时分秒的格式展现
+	header `cach_left_time` 表示本次访问时此接口所剩余的缓存时间（前提是此次访问命中了缓存，即`webcache->hit`），以时分秒的格式展现
 
 ## 联系作者
 彭宇，qq 450550330
