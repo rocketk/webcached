@@ -186,8 +186,8 @@ public class WebCacheFilter implements Filter {
         headers.put("force_update", "xhmobile-!@#");
         StringBuilder sb = new StringBuilder();
         sb.append("http://127.0.0.1:").append(request.getServerPort()).append("/").append(request.getContextPath()).append("/").append(url);
-        String a = httpClientUtils.httpGet(sb.toString(), headers);
-        System.out.println(a);
+        httpClientUtils.httpGet(sb.toString(), headers);
+//        System.out.println(a);
     }
 
 
