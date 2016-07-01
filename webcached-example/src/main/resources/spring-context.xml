@@ -79,7 +79,12 @@
 		<property name="cachedContentHttpServletResponseFactory" ref="cachedContentHttpServletResponseFactory"/>
 		<property name="configHelper" ref="configHelper"/>
 		<property name="keyGenerator" ref="keyGenerator"/>
+		<property name="httpClientUtils" ref="httpClientUtils"/>
 	</bean>
 
-
+	<bean id="httpClientUtils" class="py.webcache.util.HttpClientUtils">
+		<property name="needProxy" value="false"/>
+		<property name="userAgent" value="${httpclient.userAgent}"/>
+		<property name="timeout" value="${httpclient.timeout}"/>
+	</bean>
 </beans>

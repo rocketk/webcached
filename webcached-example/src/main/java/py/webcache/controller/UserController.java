@@ -82,6 +82,9 @@ public class UserController {
         sb.append("\n").append("request.getRequestURL() :　").append(request.getRequestURL());
         sb.append("\n").append("request.getRequestURI() :　").append(request.getRequestURI());
         sb.append("\n").append("request.getPathInfo() :　").append(request.getPathInfo());
+        sb.append("\n").append("request.getServerPort() :　").append(request.getServerPort());
+        sb.append("\n").append("request.getLocalPort() :　").append(request.getLocalPort());
+        sb.append("\n").append("request.getRemotePort() :　").append(request.getRemotePort());
         System.out.println(sb.toString());
         return sb.toString();
     }

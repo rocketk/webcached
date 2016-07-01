@@ -10,6 +10,7 @@ import py.webcache.config.pojo.Trigger;
 import py.webcache.handler.CacheHandler;
 import py.webcache.handler.CacheObject;
 import py.webcache.handler.KeyGenerator;
+import py.webcache.util.HttpClientUtils;
 import py.webcache.util.StrExpressionUtil;
 
 import javax.servlet.*;
@@ -30,6 +31,7 @@ public class WebCacheFilter implements Filter {
     protected CacheHandler cacheHandler;
     protected CachedContentHttpServletResponseFactory cachedContentHttpServletResponseFactory;
     protected KeyGenerator keyGenerator;
+    protected HttpClientUtils httpClientUtils;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -44,7 +46,7 @@ public class WebCacheFilter implements Filter {
         CachedContentHttpServletResponse responseWrapper = cachedContentHttpServletResponseFactory.getCachedHttpServletResponse(res);
         String method = req.getMethod();
 //        String uri = req.getRequestURI();
-        String uri = req.getServletPath(); // 相当于 req.getRequestURI().replace(req.getContextPath(), "")
+        String uri = req.getServletPath().replaceAll("//", "/"); // 相当于 req.getRequestURI().replace(req.getContextPath(), "")
         // 判断该请求是否支持缓存
         if (configHelper.isSupportCache(uri)) { // 支持缓存
             // 对参数进行排序，和去空
@@ -119,6 +121,9 @@ public class WebCacheFilter implements Filter {
                                 switch (strategy) {
                                     case refresh:
                                         // TODO: 2016/6/6  更新操作未实现，暂时先按clear处理。
+                                        cacheHandler.delete(key);
+                                        refreshCache(key, request);
+                                        break;
                                     case clear:
                                         cacheHandler.delete(key);
                                         break;
@@ -172,6 +177,17 @@ public class WebCacheFilter implements Filter {
             throw new NullPointerException("the global setting 'forceUpdateValue' is empty");
         }
         return headerValue.equals(request.getHeader(headerKey));
+    }
+    
+    protected void refreshCache(String key, HttpServletRequest request) {
+        // TODO: 2016/6/30 只处理GET类型
+        String url = keyGenerator.getUrlFromKey(key);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("force_update", "xhmobile-!@#");
+        StringBuilder sb = new StringBuilder();
+        sb.append("http://127.0.0.1:").append(request.getServerPort()).append("/").append(request.getContextPath()).append("/").append(url);
+        String a = httpClientUtils.httpGet(sb.toString(), headers);
+        System.out.println(a);
     }
 
 
@@ -256,5 +272,9 @@ public class WebCacheFilter implements Filter {
 
     public void setKeyGenerator(KeyGenerator keyGenerator) {
         this.keyGenerator = keyGenerator;
+    }
+
+    public void setHttpClientUtils(HttpClientUtils httpClientUtils) {
+        this.httpClientUtils = httpClientUtils;
     }
 }

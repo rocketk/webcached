@@ -11,4 +11,6 @@ public interface KeyGenerator {
     String getUriFromKey(String key);
 
     Map<String, String[]> getParamsFromKey(String key);
+
+    String getUrlFromKey(String key);
 }

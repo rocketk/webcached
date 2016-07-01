@@ -87,7 +87,15 @@ public class DefaultKeyGenerator implements KeyGenerator {
         return params;
     }
 
-
+    @Override
+    public String getUrlFromKey(String key) {
+        if (key == null || key.length() == 0) {
+            throw new IllegalArgumentException("key should not be empty");
+        }
+        String replaced = key.replace(KEY_PREFIX + "GET_", "").replace(KEY_PREFIX + "POST_", "");
+//        replaced = replaced.substring(0, replaced.indexOf("?") < 0 ? replaced.length() : replaced.indexOf("?"));
+        return replaced;
+    }
 
     private String generateUrlStringWithParams(String uri, Map<String, String[]> paramMap) {
         StringBuilder sb = new StringBuilder();
