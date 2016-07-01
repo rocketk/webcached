@@ -21,7 +21,7 @@
 		  destroy-method="shutdown">
 		<property name="servers">
 			<!-- 测试服务器，正式上线前需要做切换 -->
-			<value>${session.admin.memcached.servers}</value>
+			<value>${memcached.servers}</value>
 		</property>
 		<!-- server's weights -->
 		<!--<property name="weights">-->
