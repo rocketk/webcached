@@ -25,7 +25,7 @@ public class CacheRefreshService {
         Configuration configuration = configHelper.getConfiguration();
         headers.put(configuration.getGlobalSetting().getForceUpdateName(), configuration.getGlobalSetting().getForceUpdateValue());
         StringBuilder sb = new StringBuilder();
-        sb.append("http://127.0.0.1:").append(port).append("/").append(contextPath).append("/").append(url);
+        sb.append("http://127.0.0.1:").append(port).append(contextPath).append(url);
         System.out.println(sb.toString());
         System.out.println(httpClientUtils.httpGet(sb.toString(), headers));
     }

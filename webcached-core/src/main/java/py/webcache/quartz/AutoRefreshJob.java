@@ -20,6 +20,9 @@ public class AutoRefreshJob {
     private CacheHandler cacheHandler;
     private int aheadTime; // 提前量，单位秒，在缓存所剩余时间小于此值时，刷新缓存
 
+    /**
+     * 检查所有缓存项是否将要过期，如果快要过期，则自动刷新
+     */
     public void execute() {
         System.out.print(".");
         configuration = configHelper.getConfiguration();
