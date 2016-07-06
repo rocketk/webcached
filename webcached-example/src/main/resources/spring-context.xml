@@ -66,10 +66,13 @@
 	<bean id="keyGenerator" class="py.webcache.handler.DefaultKeyGenerator"/>
 	<bean id="cacheObjectSerializer" class="py.webcache.handler.proto.ProtobufCacheObjectSerializer"/>
 	<bean id="keySetSerializer" class="py.webcache.handler.proto.ProtobufKeySetSerializer"/>
-	<bean id="cacheHandler" class="py.webcache.handler.MemcachedCacheHandler">
-		<property name="cacheObjectSerializer" ref="cacheObjectSerializer"/>
-		<property name="client" ref="memcachedClient"/>
-		<property name="keySetSerializer" ref="keySetSerializer"/>
+	<!--<bean id="cacheHandler" class="py.webcache.handler.MemcachedCacheHandler">-->
+		<!--<property name="cacheObjectSerializer" ref="cacheObjectSerializer"/>-->
+		<!--<property name="client" ref="memcachedClient"/>-->
+		<!--<property name="keySetSerializer" ref="keySetSerializer"/>-->
+		<!--<property name="keyGenerator" ref="keyGenerator"/>-->
+	<!--</bean>-->
+	<bean id="cacheHandler" class="py.webcache.handler.HashMapCacheHandler">
 		<property name="keyGenerator" ref="keyGenerator"/>
 	</bean>
 	<bean id="cachedContentHttpServletResponseFactory" class="py.webcache.web.CachedContentHttpServletResponseFactoryImpl"/>
