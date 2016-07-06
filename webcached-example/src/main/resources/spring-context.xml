@@ -66,12 +66,14 @@
 	<bean id="keyGenerator" class="py.webcache.handler.DefaultKeyGenerator"/>
 	<bean id="cacheObjectSerializer" class="py.webcache.handler.proto.ProtobufCacheObjectSerializer"/>
 	<bean id="keySetSerializer" class="py.webcache.handler.proto.ProtobufKeySetSerializer"/>
+	<!-- Memcached实现 -->
 	<!--<bean id="cacheHandler" class="py.webcache.handler.MemcachedCacheHandler">-->
 		<!--<property name="cacheObjectSerializer" ref="cacheObjectSerializer"/>-->
 		<!--<property name="client" ref="memcachedClient"/>-->
 		<!--<property name="keySetSerializer" ref="keySetSerializer"/>-->
 		<!--<property name="keyGenerator" ref="keyGenerator"/>-->
 	<!--</bean>-->
+	<!-- 内存HashMap实现 -->
 	<bean id="cacheHandler" class="py.webcache.handler.HashMapCacheHandler">
 		<property name="keyGenerator" ref="keyGenerator"/>
 	</bean>
@@ -82,12 +84,53 @@
 		<property name="cachedContentHttpServletResponseFactory" ref="cachedContentHttpServletResponseFactory"/>
 		<property name="configHelper" ref="configHelper"/>
 		<property name="keyGenerator" ref="keyGenerator"/>
-		<property name="httpClientUtils" ref="httpClientUtils"/>
+		<property name="cacheRefreshService" ref="cacheRefreshService"/>
 	</bean>
 
+	<bean id="cacheRefreshService" class="py.webcache.service.CacheRefreshService">
+		<property name="configHelper" ref="configHelper"/>
+		<property name="keyGenerator" ref="keyGenerator"/>
+		<property name="httpClientUtils" ref="httpClientUtils"/>
+	</bean>
 	<bean id="httpClientUtils" class="py.webcache.util.HttpClientUtils">
 		<property name="needProxy" value="false"/>
 		<property name="userAgent" value="${httpclient.userAgent}"/>
 		<property name="timeout" value="${httpclient.timeout}"/>
+	</bean>
+
+	<!-- quartz -->
+	<!-- 定时清理过期数据任务 -->
+	<bean id="autoRefreshJob" class="py.webcache.quartz.AutoRefreshJob">
+		<property name="configuration" ref="webcachedConfiguration"/>
+		<property name="cacheRefreshService" ref="cacheRefreshService"/>
+		<property name="cacheHandler" ref="cacheHandler"/>
+		<property name="configHelper" ref="configHelper"/>
+		<property name="aheadTime" value="15"/>
+	</bean>
+	<bean id="autoRefreshJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="autoRefreshJob" />
+		<property name="targetMethod" value="execute" />
+		<property name="concurrent" value="true" /><!-- 可以并发执行 -->
+	</bean>
+	<bean id="autoRefreshJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="autoRefreshJobDetail" />
+		<property name="cronExpression" value="*/10 * * * * ?" /><!-- 每月中旬10:15执行 -->
+	</bean>
+
+	<!-- 任务调度入口 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<!--<ref bean="cloudapiLogJobTrigger" />-->
+				<ref bean="autoRefreshJobTrigger"/>
+			</list>
+		</property>
+		<!-- 跳过检查更新 -->
+		<property name="quartzProperties">
+			<props>
+				<prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+				<prop key="org.terracotta.quartz.skipUpdateCheck">true</prop>
+			</props>
+		</property>
 	</bean>
 </beans>

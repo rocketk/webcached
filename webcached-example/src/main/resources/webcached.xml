@@ -6,7 +6,6 @@
 		<forceUpdateName>force_update</forceUpdateName>
 		<!--强制更新缓存口令-->
 		<forceUpdateValue>12345678</forceUpdateValue>
-		<asdfasdf>sasdf</asdfasdf>
 	</global-setting>
 	<caches>
 		<!-- cache配置对象 -->
@@ -18,9 +17,7 @@
 				忽略无值参数-->
 			<parameter type="exclude_all" exceptions="userId"/>
 			<!--缓存有效期，单位秒，默认60-->
-			<expired-time>180</expired-time>
-			<!--缓存到期之后自动刷新，默认为false-->
-			<auto-refresh>true</auto-refresh>
+			<expired-time>60</expired-time>
 			<!--支持的status状态码，多个状态码用逗号分隔，即当返回结果并不支持缓存时，将不会缓存结果，默认为200-->
 			<support-status>200</support-status>
 		</cache>
@@ -32,6 +29,10 @@
 				type类型包含 include_all/exclude_all ，用来描述哪些参数可以或不可以被用作生成缓存key，默认为include_all
 				忽略无值参数-->
 			<parameter type="exclude_all" exceptions="pageNo"/>
+			<!--缓存有效期，单位秒，默认60-->
+			<expired-time>30</expired-time>
+			<!--缓存到期之后自动刷新，默认为false。自动刷新功能需要使用quartz实现-->
+			<auto-refresh>true</auto-refresh>
 		</cache>
 	</caches>
 	<!--缓存更新设置-->

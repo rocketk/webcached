@@ -5,13 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import py.webcache.config.ConfigHelper;
 import py.webcache.config.pojo.Condition;
-import py.webcache.config.pojo.Configuration;
 import py.webcache.config.pojo.GlobalSetting;
 import py.webcache.config.pojo.Trigger;
 import py.webcache.handler.CacheHandler;
 import py.webcache.handler.CacheObject;
 import py.webcache.handler.KeyGenerator;
-import py.webcache.util.HttpClientUtils;
+import py.webcache.service.CacheRefreshService;
 import py.webcache.util.StrExpressionUtil;
 
 import javax.servlet.*;
@@ -32,7 +31,8 @@ public class WebCacheFilter implements Filter {
     protected CacheHandler cacheHandler;
     protected CachedContentHttpServletResponseFactory cachedContentHttpServletResponseFactory;
     protected KeyGenerator keyGenerator;
-    protected HttpClientUtils httpClientUtils;
+    protected CacheRefreshService cacheRefreshService;
+
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,6 +48,7 @@ public class WebCacheFilter implements Filter {
         String method = req.getMethod();
 //        String uri = req.getRequestURI();
         String uri = req.getServletPath().replaceAll("//", "/"); // 相当于 req.getRequestURI().replace(req.getContextPath(), "")
+        setGlobalSettings(req);
         // 判断该请求是否支持缓存
         if (configHelper.isSupportCache(uri)) { // 支持缓存
             // 对参数进行排序，和去空
@@ -123,7 +124,8 @@ public class WebCacheFilter implements Filter {
                                     case refresh:
                                         // TODO: 2016/6/6  更新操作未实现，暂时先按clear处理。
                                         cacheHandler.delete(key);
-                                        refreshCache(key, request);
+//                                        refreshCache(key, request);
+                                        cacheRefreshService.refreshCache(key, request.getServerPort(), request.getContextPath());
                                         break;
                                     case clear:
                                         cacheHandler.delete(key);
@@ -180,17 +182,16 @@ public class WebCacheFilter implements Filter {
         return headerValue.equals(request.getHeader(headerKey));
     }
     
-    protected void refreshCache(String key, HttpServletRequest request) {
-        // TODO: 2016/6/30 只处理GET类型
-        String url = keyGenerator.getUrlFromKey(key);
-        Map<String, String> headers = new HashMap<>();
-        Configuration configuration = configHelper.getConfiguration();
-        headers.put(configuration.getGlobalSetting().getForceUpdateName(), configuration.getGlobalSetting().getForceUpdateName());
-        StringBuilder sb = new StringBuilder();
-        sb.append("http://127.0.0.1:").append(request.getServerPort()).append("/").append(request.getContextPath()).append("/").append(url);
-        httpClientUtils.httpGet(sb.toString(), headers);
-//        System.out.println(a);
-    }
+//    protected void refreshCache(String key, HttpServletRequest request) {
+//        // TODO: 2016/6/30 只处理GET类型
+//        String url = keyGenerator.getUrlFromKey(key);
+//        Map<String, String> headers = new HashMap<>();
+//        Configuration configuration = configHelper.getConfiguration();
+//        headers.put(configuration.getGlobalSetting().getForceUpdateName(), configuration.getGlobalSetting().getForceUpdateName());
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("http://127.0.0.1:").append(request.getServerPort()).append("/").append(request.getContextPath()).append("/").append(url);
+//        httpClientUtils.httpGet(sb.toString(), headers);
+//    }
 
 
     @Override
@@ -244,6 +245,16 @@ public class WebCacheFilter implements Filter {
         response.setHeader(HEADER_WEBCACHE, "force update");
     }
 
+    protected void setGlobalSettings(HttpServletRequest request) {
+        GlobalSetting globalSetting = configHelper.getGlobalSetting();
+        if (globalSetting.getContextPath() == null) {
+            globalSetting.setContextPath(request.getContextPath());
+        }
+        if (globalSetting.getPort() == null) {
+            globalSetting.setPort(request.getServerPort());
+        }
+    }
+
     public ConfigHelper getConfigHelper() {
         return configHelper;
     }
@@ -268,6 +279,10 @@ public class WebCacheFilter implements Filter {
         this.cachedContentHttpServletResponseFactory = cachedContentHttpServletResponseFactory;
     }
 
+    public void setCacheRefreshService(CacheRefreshService cacheRefreshService) {
+        this.cacheRefreshService = cacheRefreshService;
+    }
+
     public KeyGenerator getKeyGenerator() {
         return keyGenerator;
     }
@@ -276,7 +291,4 @@ public class WebCacheFilter implements Filter {
         this.keyGenerator = keyGenerator;
     }
 
-    public void setHttpClientUtils(HttpClientUtils httpClientUtils) {
-        this.httpClientUtils = httpClientUtils;
-    }
 }
