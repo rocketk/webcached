@@ -63,7 +63,7 @@ webcached
 ```
   
 ## 快速体验
-- 说明：本项目虽然对缓存服务器进行了抽象，理论上可以支持任意一种缓存服务器（诸如memcached/redis/mongodb或者干脆直接用HashMap），但截至到目前，只实现了memcached版本，所以要想跑这个示例程序的话，需要先安装并启动一个memcached服务，具体安装和启动过程就不在这里叙述了，百度一下啥都有。如果要实现内存版本的，只需实现`CacheHandler`接口就行了，并在`webcached/webcached-example/src/main/resoures/spring-context.xml`中配置一下即可
+- 说明：本项目对缓存服务器进行了抽象，可以支持任意一种缓存服务器（诸如memcached/redis/mongodb或者干脆直接用HashMap），但截至到目前，只实现了memcached版本和本地HashMap版本。如果要实现其他版本的CacheHandler，只需实现`CacheHandler`接口就行了，并在`webcached/webcached-example/src/main/resoures/spring-context.xml`中配置一下即可
 - 下载项目，导入到开发环境（我用的是Intellij Idea）
 - 打开`webcached/webcached-example/src/main/resoures/config.properties`，修改`memcached.servers`为自己的memcached服务器地址
 - 为`webcached-example`模块配置一个tomcat容器，跑起来，假设端口`8080`，contextPath为`webcached`
