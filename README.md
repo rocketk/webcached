@@ -81,5 +81,3 @@ webcached
 
 	- header `cach_left_time` 表示本次访问时此接口所剩余的缓存时间（前提是此次访问命中了缓存，即`webcache->hit`），以“时分秒”的格式展现
 
-## 联系作者
-彭宇，qq 450550330
